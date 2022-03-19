@@ -42,6 +42,13 @@ public class RedBlackTree {
         }else {
             return delete(current.left, data);
         }
+       return this.repairDelete();
+    }
+
+    Node repairDelete(){
+        if (x==null){
+            return null;
+        }
         if (x.color==RED) {
             x.color = BLACK;
         }else {
@@ -65,23 +72,31 @@ public class RedBlackTree {
         return null;
     }
 
-    public void deletingAction(Node current){
+    public Node deletingAction(Node current){
         int nils = current.countNils();
         if (nils==2){
             x = current.right;
             if (current==this.root)
-                this.root = null;
+                this.root = NIL;
+            else
+                x.parent = current.parent;
             current = x;
         }else if (nils==1){
             x = current.right==NIL ? current.left : current.right;
+            if (current==this.root)
+                this.root = x;
+            else
+                x.parent = current.parent;
             current = x;
         }else{
-            Node replaceTemp = getMinNode(current);
+            Node replaceTemp = getMinNode(current.right);
             x = replaceTemp.right;
             if (current.color==RED && replaceTemp.color==BLACK)
                 replaceTemp.color=RED;
-            current = replaceTemp;
+            x.data = replaceTemp.data;
+            x.right = delete(x.right,x.data);
         }
+        return current;
     }
 
     Node getMinNode(Node x){
